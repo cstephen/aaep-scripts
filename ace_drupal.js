@@ -1,10 +1,10 @@
-(function() {
-  var rest = require('restler-q');
-  var drupalApi = 'http://localhost:9090/api'
-  var token;
-  var cookie;
+var rest = require('restler-q');
+var drupalApi = 'http://localhost:9090/api';
 
-  this.initialize = function() {
+module.exports = {
+  drupalToken: null,
+  cookie: null,
+  initialize: function() {
     return new Promise(function(resolve, reject) {
       var url = drupalApi + '/user/token.json';
       var options = {
@@ -15,12 +15,12 @@
       rest.postJson(url, options).then(function(response) {
         return response
       }).then(function(response) {
-        var token = response;
+        var drupalToken = response;
         url = drupalApi + '/user/login.json';
         options = {
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': token
+            'X-CSRF-Token': drupalToken
           },
           'username': 'ACE Import User',
           'password': 'password'
@@ -28,72 +28,53 @@
 
         return rest.postJson(url, options);
       }).then(function(response) {
-        this.token = response.token;
-        this.cookie = response.session_name + '=' + response.sessid;
+        drupalToken = response.token;
+        cookie = response.session_name + '=' + response.sessid;
         resolve();
       }).fail(function(err) {
         console.log(err);
         reject(err);
       });
     });
-  }
-
-  this.remove = function() {
+  },
+  remove: function() {
     var url = drupalApi + '/views/ace_weather_reports';
     var options = {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-CSRF-Token': this.token,
-        'Cookie': this.cookie
+        'X-CSRF-Token': drupalToken,
+        'Cookie': cookie
       }
     }
     rest.get(url, options).then(function(response) {
-      console.log('Woo!');
       for(var i = 0; i < response.length; i++) {
         console.log('Deleting: ' + response[i].nid);
-        this.url = drupalApi + '/node/' + response[i].nid;
-        return rest.del(this.url, this.options);
+        url = drupalApi + '/node/' + response[i].nid;
+        return rest.del(url, options);
       }
     }).fail(function(err) {
       console.log(err);
     });
-  }
-
-  this.temp = function() {
-    var url = drupalApi + '/node/1197';
-    var options = {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': this.token,
-        'Cookie': this.cookie
+  },
+  add: function(results) {
+    var fs = require('fs');
+    var underscore = require('underscore');
+    var content = fs.readFileSync('./ace_weather_reports.json', 'utf8');
+    var template = underscore.template(content);
+    for(var i = 0; i < results.length; i++) {
+      content = template(results[i]);
+      content = JSON.parse(content);
+      var url = drupalApi + '/node.json';
+      var options = {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': drupalToken,
+          'Cookie': cookie
+        }
       }
+      rest.postJson(url, content, options);
     }
-    rest.get(url, options).then(function(response) {
-      console.log(response);
-    });
   }
-
-  this.post = function() {
-    var content = require('./ace_weather_reports.json');
-    var url = drupalApi + '/node.json';
-    var options = {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': this.token,
-        'Cookie': this.cookie
-      }
-    }
-
-    rest.postJson(url, content, options).then(function(reponse) {
-      console.log(response);
-    }).fail(function(err) {
-      console.log(err);
-    });
-  }
-
-  //this.initialize().then(this.remove);
-  this.initialize().then(this.post);
-})();
+}

@@ -1,64 +1,64 @@
 {
   "type": "ace_weather_report",
-  "title": "{title}",
+  "title": "<%= title %>",
   "body": {
     "und": [{
-      "value": "{body}"
+      "value": "<%= body %>"
     }]
   },
   "field_cloud_cover": {
     "und": [{
-      "value": "{cloud_cover}"
+      "value": "<%= cloud_cover %>"
     }]
   },
   "field_precipitation": {
     "und": [{
-      "value": "{precipitation}"
+      "value": "<%= precipitation %>"
     }]
   },
   "field_visibility": {
     "und": [{
-      "value": "{visibility}"
+      "value": "<%= visibility %>"
     }]
   },
   "field_pressure_tendency": {
     "und": [{
-      "value": "{pressure_tendency}"
+      "value": "<%= pressure_tendency %>"
     }]
   },
   "field_pressure_value": {
     "und": [{
-      "value": "{pressure_value}"
+      "value": "<%= pressure_value %>"
     }]
   },
   "field_temperature_value": {
     "und": [{
-      "value": "{temperature_value}"
+      "value": "<%= temperature_value %>"
     }]
   },
   "field_temperature_units": {
     "und": [{
-      "value": "{temperature_units}"
+      "value": "<%= temperature_units %>"
     }]
   },
   "field_wind_value": {
     "und": [{
-      "value": "{wind_value}"
+      "value": "<%= wind_value %>"
     }]
   },
   "field_wind_units": {
     "und": [{
-      "value": "{wind_units}"
+      "value": "<%= wind_units %>"
     }]
   },
   "field_wind_direction": {
     "und": [{
-      "value": "{wind_direction}"
+      "value": "<%= wind_direction %>"
     }]
   },
   "field_phenomenon": {
     "und": [{
-      "value": "{phenomenon}"
+      "value": "<%= phenomenon %>"
     }]
   }
 }

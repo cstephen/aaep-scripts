@@ -4,8 +4,9 @@
   "description": "",
   "main": "ace_importer.js",
   "dependencies": {
+    "fs": "0.0.2",
     "restler-q": "^0.1.1",
-    "string-template": "^1.0.0"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {},
   "scripts": {

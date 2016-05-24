@@ -1,9 +1,9 @@
-(function() {
-  var rest = require('restler-q');
-  var loopbackApi = 'http://localhost:3000/api'
-  var token;
+var rest = require('restler-q');
+var loopbackApi = 'http://localhost:3000/api';
 
-  this.initialize = function() {
+module.exports = {
+  loopbackToken: null,
+  initialize: function() {
     return new Promise(function(resolve, reject) {
       var url = loopbackApi + '/MobileUsers/login';
       var options = {
@@ -16,17 +16,16 @@
         }
       }
       rest.post(url, options).then(function(response) {
-        this.token = response.id;
+        loopbackToken = response.id;
         resolve();
       }).fail(function(err) {
         reject(err);
       });
     });
-  }
-
-  this.get = function() {
+  },
+  get: function() {
     return new Promise(function(resolve, reject) {
-      var url = loopbackApi + '/WeatherReports?access_token=' + this.token;
+      var url = loopbackApi + '/WeatherReports?access_token=' + loopbackToken;
       rest.get(url).then(function(response) {
         var results = [];
         for(var i = 0; i < response.length; i++) {
@@ -52,12 +51,4 @@
       });
     });
   }
-
-  this.initialize().then(function() {
-    return this.get();
-  }).then(function(values) {
-    console.log(values);
-  }, function(err) {
-    console.log(err);
-  });
-})();
+}
