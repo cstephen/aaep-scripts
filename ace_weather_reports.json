@@ -1,0 +1,64 @@
+{
+  "type": "ace_weather_report",
+  "title": "{title}",
+  "body": {
+    "und": [{
+      "value": "{body}"
+    }]
+  },
+  "field_cloud_cover": {
+    "und": [{
+      "value": "{cloud_cover}"
+    }]
+  },
+  "field_precipitation": {
+    "und": [{
+      "value": "{precipitation}"
+    }]
+  },
+  "field_visibility": {
+    "und": [{
+      "value": "{visibility}"
+    }]
+  },
+  "field_pressure_tendency": {
+    "und": [{
+      "value": "{pressure_tendency}"
+    }]
+  },
+  "field_pressure_value": {
+    "und": [{
+      "value": "{pressure_value}"
+    }]
+  },
+  "field_temperature_value": {
+    "und": [{
+      "value": "{temperature_value}"
+    }]
+  },
+  "field_temperature_units": {
+    "und": [{
+      "value": "{temperature_units}"
+    }]
+  },
+  "field_wind_value": {
+    "und": [{
+      "value": "{wind_value}"
+    }]
+  },
+  "field_wind_units": {
+    "und": [{
+      "value": "{wind_units}"
+    }]
+  },
+  "field_wind_direction": {
+    "und": [{
+      "value": "{wind_direction}"
+    }]
+  },
+  "field_phenomenon": {
+    "und": [{
+      "value": "{phenomenon}"
+    }]
+  }
+}

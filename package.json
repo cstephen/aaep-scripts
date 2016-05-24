@@ -4,7 +4,8 @@
   "description": "",
   "main": "ace_importer.js",
   "dependencies": {
-    "restler-q": "^0.1.1"
+    "restler-q": "^0.1.1",
+    "string-template": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
