@@ -1,9 +1,10 @@
 var rest = require('restler-q');
 var loopbackApi = 'http://localhost:3000/api';
 
-module.exports = {
-  loopbackToken: null,
-  initialize: function() {
+module.exports = function aceLoopback() {
+  var token;
+
+  function initialize() {
     return new Promise(function(resolve, reject) {
       var url = loopbackApi + '/MobileUsers/login';
       var options = {
@@ -16,21 +17,22 @@ module.exports = {
         }
       }
       rest.post(url, options).then(function(response) {
-        loopbackToken = response.id;
+        token = response.id;
         resolve();
       }).fail(function(err) {
         reject(err);
       });
     });
-  },
-  get: function() {
+  }
+
+  function get() {
     return new Promise(function(resolve, reject) {
-      var url = loopbackApi + '/WeatherReports?access_token=' + loopbackToken;
+      var url = loopbackApi + '/WeatherReports?access_token=' + token;
       rest.get(url).then(function(response) {
         var results = [];
         for(var i = 0; i < response.length; i++) {
           results.push({
-            'title': 'ACE Wather Reports',
+            'title': 'ACE Weather Reports',
             'body': response[i].notes,
             'cloud_cover': response[i].cloudCover,
             'precipitation': response[i].precipitation,
@@ -50,5 +52,10 @@ module.exports = {
         reject(err);
       });
     });
+  }
+
+  return {
+    initialize: initialize,
+    get: get
   }
 }

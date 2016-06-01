@@ -1,11 +1,14 @@
 var aceLoopback = require('./ace_loopback.js');
 var aceDrupal = require('./ace_drupal.js');
 
-var loopbackInitPromise = aceLoopback.initialize();
-var drupalInitPromise = aceDrupal.initialize();
+var loopbackAgent = new aceLoopback();
+var drupalAgent = new aceDrupal();
+
+var loopbackInitPromise = loopbackAgent.initialize();
+var drupalInitPromise = drupalAgent.initialize();
 
 Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {
-  return aceLoopback.get();
+  return loopbackAgent.get();
 }).then(function(results) {
-  return aceDrupal.add(results);
+  return drupalAgent.add(results);
 });

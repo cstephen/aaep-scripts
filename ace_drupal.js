@@ -1,10 +1,11 @@
 var rest = require('restler-q');
 var drupalApi = 'http://localhost:9090/api';
 
-module.exports = {
-  drupalToken: null,
-  cookie: null,
-  initialize: function() {
+module.exports = function aceDrupal() {
+  var token;
+  var cookie;
+
+  function initialize() {
     return new Promise(function(resolve, reject) {
       var url = drupalApi + '/user/token.json';
       var options = {
@@ -15,12 +16,12 @@ module.exports = {
       rest.postJson(url, options).then(function(response) {
         return response
       }).then(function(response) {
-        var drupalToken = response;
+        var token = response;
         url = drupalApi + '/user/login.json';
         options = {
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': drupalToken
+            'X-CSRF-Token': token
           },
           'username': 'ACE Import User',
           'password': 'password'
@@ -28,7 +29,7 @@ module.exports = {
 
         return rest.postJson(url, options);
       }).then(function(response) {
-        drupalToken = response.token;
+        token = response.token;
         cookie = response.session_name + '=' + response.sessid;
         resolve();
       }).fail(function(err) {
@@ -36,14 +37,15 @@ module.exports = {
         reject(err);
       });
     });
-  },
-  remove: function() {
+  }
+
+  function remove() {
     var url = drupalApi + '/views/ace_weather_reports';
     var options = {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-CSRF-Token': drupalToken,
+        'X-CSRF-Token': token,
         'Cookie': cookie
       }
     }
@@ -56,8 +58,9 @@ module.exports = {
     }).fail(function(err) {
       console.log(err);
     });
-  },
-  add: function(results) {
+  }
+
+  function add(results) {
     var fs = require('fs');
     var underscore = require('underscore');
     var content = fs.readFileSync('./ace_weather_reports.json', 'utf8');
@@ -70,11 +73,17 @@ module.exports = {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'X-CSRF-Token': drupalToken,
+          'X-CSRF-Token': token,
           'Cookie': cookie
         }
       }
       rest.postJson(url, content, options);
     }
+  }
+
+  return {
+    initialize: initialize,
+    remove: remove,
+    add: add
   }
 }
