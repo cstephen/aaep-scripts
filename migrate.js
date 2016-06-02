@@ -15,27 +15,11 @@ var drupalInitPromise = drupalAgent.initialize({
 });
 
 weatherHighlight = {
-	'title': 'ACE Weather Reports',
 	'loopbackPath': '/WeatherReports',
+	'drupalType': 'ace_weather_report',
+	'drupalTitle': 'ACE Weather Reports',
 	'drupalViewPath': '/views/ace_weather_reports',
-	'drupalTemplate': './ace_weather_reports.json',
-
-	// Keys on the left are fields in the Drupal content type. Values on the
-	// right are their corresponding fields from the LoopBack model.
-	fieldMap: {
-		'body': 'notes',
-		'cloud_cover': 'cloudCover',
-		'precipitation': 'precipitation',
-		'visibility': 'visibility',
-		'pressure_tendency': 'pressureTendency',
-		'pressure_value': 'pressureValue',
-		'temperature_value': 'temperatureValue',
-		'temperature_units': 'temperatureUnits',
-		'wind_value': 'windValue',
-		'wind_units': 'windUnits',
-		'wind_direction': 'windDirection',
-		'phenomenon': 'other'
-	}
+	'drupalTemplate': './ace_weather_reports.json'
 }
 
 Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {

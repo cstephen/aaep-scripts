@@ -1,14 +1,24 @@
+<%
+// This template is used to create new nodes in Drupal via POSTs to the
+// REST Server API. Each Drupal field corresponds to a field from the LoopBack
+// model. The template's variable names (except type and title) come from the
+// LoopBack model. This template thus maps values from LoopBack into Drupal.
+//
+// The basic structure of this template file was adapted from the results of a
+// GET request to Drupal's REST Server API.
+%>
+
 {
-  "type": "ace_weather_report",
+  "type": "<%= type %>",
   "title": "<%= title %>",
   "body": {
     "und": [{
-      "value": "<%= body %>"
+      "value": "<%= notes %>"
     }]
   },
   "field_cloud_cover": {
     "und": [{
-      "value": "<%= cloud_cover %>"
+      "value": "<%= cloudCover %>"
     }]
   },
   "field_precipitation": {
@@ -23,42 +33,42 @@
   },
   "field_pressure_tendency": {
     "und": [{
-      "value": "<%= pressure_tendency %>"
+      "value": "<%= pressureTendency %>"
     }]
   },
   "field_pressure_value": {
     "und": [{
-      "value": "<%= pressure_value %>"
+      "value": "<%= pressureValue %>"
     }]
   },
   "field_temperature_value": {
     "und": [{
-      "value": "<%= temperature_value %>"
+      "value": "<%= temperatureValue %>"
     }]
   },
   "field_temperature_units": {
     "und": [{
-      "value": "<%= temperature_units %>"
+      "value": "<%= temperatureUnits %>"
     }]
   },
   "field_wind_value": {
     "und": [{
-      "value": "<%= wind_value %>"
+      "value": "<%= windValue %>"
     }]
   },
   "field_wind_units": {
     "und": [{
-      "value": "<%= wind_units %>"
+      "value": "<%= windUnits %>"
     }]
   },
   "field_wind_direction": {
     "und": [{
-      "value": "<%= wind_direction %>"
+      "value": "<%= windDirection %>"
     }]
   },
   "field_phenomenon": {
     "und": [{
-      "value": "<%= phenomenon %>"
+      "value": "<%= other %>"
     }]
   }
 }

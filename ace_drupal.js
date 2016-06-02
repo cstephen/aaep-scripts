@@ -69,6 +69,8 @@ module.exports = function aceDrupal(baseUrl) {
     var template = underscore.template(content);
 
     for(var i = 0; i < results.length; i++) {
+      results[i].type = metadata.drupalType;
+      results[i].title = metadata.drupalTitle;
       content = template(results[i]);
       content = JSON.parse(content);
       var url = baseUrl + '/node.json';
