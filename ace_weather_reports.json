@@ -16,6 +16,11 @@
       "value": "<%= notes %>"
     }]
   },
+  "field_loopback_id": {
+    "und": [{
+      "value": "<%= id %>"
+    }]
+  },
   "field_cloud_cover": {
     "und": [{
       "value": "<%= cloudCover %>"

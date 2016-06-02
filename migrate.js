@@ -22,8 +22,14 @@ weatherHighlight = {
 	'drupalTemplate': './ace_weather_reports.json'
 }
 
+/*
 Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {
-  return loopbackAgent.get(weatherHighlight);
+  return loopbackAgent.get(weatherHighlight.loopbackPath);
 }).then(function(results) {
   return drupalAgent.add(weatherHighlight, results);
+});
+*/
+
+Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {
+  drupalAgent.remove(weatherHighlight.drupalViewPath);
 });

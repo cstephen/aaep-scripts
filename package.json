@@ -4,6 +4,7 @@
   "description": "",
   "main": "ace_importer.js",
   "dependencies": {
+    "async": "^2.0.0-rc.5",
     "fs": "0.0.2",
     "restler-q": "^0.1.1",
     "underscore": "^1.8.3"

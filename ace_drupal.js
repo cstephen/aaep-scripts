@@ -1,4 +1,5 @@
 var rest = require('restler-q');
+var async = require('async');
 
 module.exports = function aceDrupal(baseUrl) {
   var baseUrl = baseUrl;
@@ -51,11 +52,13 @@ module.exports = function aceDrupal(baseUrl) {
       }
     }
     rest.get(url, options).then(function(response) {
-      for(var i = 0; i < response.length; i++) {
-        console.log('Deleting: ' + response[i].nid);
-        url = baseUrl + '/node/' + response[i].nid;
-        return rest.del(url, options);
-      }
+      async.eachLimit(response, 3, function(result, callback) {
+        console.log('Deleting: ' + result.nid);
+        url = baseUrl + '/node/' + result.nid;
+        rest.del(url, options).then(function(response) {
+          callback();
+        });
+      });
     }).fail(function(err) {
       console.log(err);
     });
@@ -67,7 +70,6 @@ module.exports = function aceDrupal(baseUrl) {
     var underscore = require('underscore');
     var content = fs.readFileSync(drupalTemplate, 'utf8');
     var template = underscore.template(content);
-
     for(var i = 0; i < results.length; i++) {
       results[i].type = metadata.drupalType;
       results[i].title = metadata.drupalTitle;

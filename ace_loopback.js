@@ -23,9 +23,8 @@ module.exports = function aceLoopback(baseUrl) {
     });
   }
 
-  function get(metadata) {
+  function get(loopbackPath) {
     return new Promise(function(resolve, reject) {
-      var loopbackPath = metadata.loopbackPath;
       var url = baseUrl + loopbackPath + '?access_token=' + token;
       rest.get(url).then(function(response) {
         resolve(response);
