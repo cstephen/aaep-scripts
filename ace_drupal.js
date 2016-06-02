@@ -1,30 +1,31 @@
 var rest = require('restler-q');
-var drupalApi = 'http://localhost:9090/api';
 
-module.exports = function aceDrupal() {
+module.exports = function aceDrupal(baseUrl) {
+  var baseUrl = baseUrl;
   var token;
   var cookie;
 
-  function initialize() {
+  function initialize(credentials) {
     return new Promise(function(resolve, reject) {
-      var url = drupalApi + '/user/token.json';
+      var url = baseUrl + '/user/token.json';
       var options = {
         headers: {
           'Content-Type': 'application/json'
         }
       }
+
       rest.postJson(url, options).then(function(response) {
         return response
       }).then(function(response) {
         var token = response;
-        url = drupalApi + '/user/login.json';
+        url = baseUrl + '/user/login.json';
         options = {
           headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': token
           },
-          'username': 'ACE Import User',
-          'password': 'password'
+          'username': credentials.username,
+          'password': credentials.password
         }
 
         return rest.postJson(url, options);
@@ -39,8 +40,8 @@ module.exports = function aceDrupal() {
     });
   }
 
-  function remove() {
-    var url = drupalApi + '/views/ace_weather_reports';
+  function remove(viewPath) {
+    var url = baseUrl + viewPath;
     var options = {
       headers: {
         'Accept': 'application/json',
@@ -52,7 +53,7 @@ module.exports = function aceDrupal() {
     rest.get(url, options).then(function(response) {
       for(var i = 0; i < response.length; i++) {
         console.log('Deleting: ' + response[i].nid);
-        url = drupalApi + '/node/' + response[i].nid;
+        url = baseUrl + '/node/' + response[i].nid;
         return rest.del(url, options);
       }
     }).fail(function(err) {
@@ -60,15 +61,17 @@ module.exports = function aceDrupal() {
     });
   }
 
-  function add(results) {
+  function add(metadata, results) {
+    drupalTemplate = metadata.drupalTemplate;
     var fs = require('fs');
     var underscore = require('underscore');
-    var content = fs.readFileSync('./ace_weather_reports.json', 'utf8');
+    var content = fs.readFileSync(drupalTemplate, 'utf8');
     var template = underscore.template(content);
+
     for(var i = 0; i < results.length; i++) {
       content = template(results[i]);
       content = JSON.parse(content);
-      var url = drupalApi + '/node.json';
+      var url = baseUrl + '/node.json';
       var options = {
         headers: {
           'Accept': 'application/json',

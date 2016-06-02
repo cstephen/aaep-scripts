@@ -1,21 +1,19 @@
 var rest = require('restler-q');
-var loopbackApi = 'http://localhost:3000/api';
 
-module.exports = function aceLoopback() {
+module.exports = function aceLoopback(baseUrl) {
+  var baseUrl = baseUrl;
   var token;
 
-  function initialize() {
+  function initialize(loginPath, credentials) {
     return new Promise(function(resolve, reject) {
-      var url = loopbackApi + '/MobileUsers/login';
+      var url = baseUrl + loginPath;
       var options = {
         headers: {
           'Content-Type': 'application/json'
         },
-        data: {
-          'username': 'testuser',
-          'password': 'password'
-        }
+        data: credentials
       }
+      
       rest.post(url, options).then(function(response) {
         token = response.id;
         resolve();
@@ -25,27 +23,27 @@ module.exports = function aceLoopback() {
     });
   }
 
-  function get() {
+  function get(metadata) {
     return new Promise(function(resolve, reject) {
-      var url = loopbackApi + '/WeatherReports?access_token=' + token;
+      var title = metadata.title;
+      var loopbackPath = metadata.loopbackPath;
+      var fieldMap = metadata.fieldMap;
+      var url = baseUrl + loopbackPath + '?access_token=' + token;
+
       rest.get(url).then(function(response) {
         var results = [];
         for(var i = 0; i < response.length; i++) {
-          results.push({
-            'title': 'ACE Weather Reports',
-            'body': response[i].notes,
-            'cloud_cover': response[i].cloudCover,
-            'precipitation': response[i].precipitation,
-            'visibility': response[i].visibility,
-            'pressure_tendency': response[i].pressureTendency,
-            'pressure_value': response[i].pressureValue,
-            'temperature_value': response[i].temperatureValue,
-            'temperature_units': response[i].temperatureUnits,
-            'wind_value': response[i].windValue,
-            'wind_units': response[i].windUnits,
-            'wind_direction': response[i].windDirection,
-            'phenomenon': response[i].other
-          });
+          // Initialize this result with the title provided in the metadata.
+          var result = {
+            title: title
+          };
+
+          // Store each LoopBack field as its corresponding Drupal name.
+          for(field in fieldMap) {
+            result[field] = response[i][fieldMap[field]];
+          }
+
+          results.push(result);
         }
         resolve(results);
       }).fail(function(err) {
