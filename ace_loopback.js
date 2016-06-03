@@ -27,7 +27,7 @@ module.exports = function aceLoopback(baseUrl) {
     return new Promise(function(resolve, reject) {
       var url = baseUrl + loopbackPath + '?access_token=' + token;
       rest.get(url).then(function(response) {
-        resolve(response);
+        resolve(response.WeatherReports);
       }).fail(function(err) {
         reject(err);
       });

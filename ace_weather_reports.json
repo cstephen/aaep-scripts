@@ -75,5 +75,15 @@
     "und": [{
       "value": "<%= other %>"
     }]
+  },
+  "field_latitude": {
+    "und": [{
+      "value": "<%= Position.latlng.lat %>"
+    }]
+  },
+  "field_longitude": {
+    "und": [{
+      "value": "<%= Position.latlng.lng %>"
+    }]
   }
 }

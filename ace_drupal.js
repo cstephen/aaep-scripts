@@ -20,7 +20,6 @@ module.exports = function aceDrupal(baseUrl) {
     var fs = require('fs');
     var content = fs.readFileSync(metadata.drupalTemplate, 'utf8');
     var template = underscore.template(content);
-    
     console.log('Adding: ' + item.id);
     item.type = metadata.drupalType;
     item.title = metadata.drupalTitle;
