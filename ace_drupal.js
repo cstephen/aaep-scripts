@@ -103,9 +103,18 @@ module.exports = function aceDrupal(baseUrl) {
     });
   }
 
+  function get(viewPath) {
+    var url = baseUrl + viewPath;
+    var options = {
+      headers: authHeaders
+    }
+    return rest.get(url, options);
+  }
+
   return {
     initialize: initialize,
     remove: remove,
-    add: add
+    add: add,
+    get: get
   }
 }
