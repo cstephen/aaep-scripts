@@ -133,7 +133,6 @@ drupalResultsPromise
         callback();
       })
       .catch(function(error) {
-        callback(error);
         reject(error);
       });
     }, function(err) {
