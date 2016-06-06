@@ -66,7 +66,7 @@ var drupalResultsPromise = drupalAgent.initialize({
 
 var db = pgp(pgConnection);
 
-function createTable(index, data, delay) {
+function createTable(index) {
     switch (index) {
         case 0:
             return this.query('DROP TABLE IF EXISTS aaep_cache_new');
@@ -94,7 +94,7 @@ function createTable(index, data, delay) {
     }
 }
 
-function swapTable(index, data, delay) {
+function swapTable(index) {
     switch (index) {
         case 0:
             return this.query('DROP TABLE IF EXISTS aaep_cache');
@@ -132,8 +132,8 @@ drupalResultsPromise
       .then(function() {
         callback();
       })
-      .catch(function(error) {
-        reject(error);
+      .catch(function(err) {
+        reject(err);
       });
     }, function(err) {
       if(err) {
