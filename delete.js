@@ -8,6 +8,6 @@ var drupalInitPromise = drupalAgent.initialize({
 });
 
 drupalInitPromise
-	.then(function () {
-	  drupalAgent.remove('/views/ace_weather_reports');
-	});
+  .then(function () {
+    drupalAgent.remove('/views/ace_weather_reports');
+  });

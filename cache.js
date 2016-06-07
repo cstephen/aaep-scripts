@@ -109,42 +109,42 @@ var aceWeatherPromise = drupalInitPromise
 var db = pgp(pgConnection);
 
 function createTable(index) {
-    switch (index) {
-        case 0:
-            return this.query('DROP TABLE IF EXISTS aaep_cache_new');
-        case 1:
-            return this.query('DROP INDEX IF EXISTS theme_idx_new');
-        case 2:
-            return this.query('CREATE TABLE aaep_cache_new (' +
-                              '  id integer,' +
-                              '  title character varying(255),' +
-                              '  snippet text,' +
-                              '  link character varying(2048),' +
-                              '  url character varying(2048),' +
-                              '  lat double precision,' +
-                              '  lng double precision,'+
-                              '  geometry_type text,' +
-                              '  geometry text,' +
-                              '  ordinal bigint,' +
-                              '  theme character varying(255),' +
-                              '  image character varying(2048)' +
-                              ')');
-        case 3:
-          return this.query('CREATE INDEX theme_idx_new ON aaep_cache_new (theme)');
-        case 4:
-          return this.query('GRANT SELECT ON aaep_cache_new TO scott');
-    }
+  switch (index) {
+    case 0:
+      return this.query('DROP TABLE IF EXISTS aaep_cache_new');
+    case 1:
+      return this.query('DROP INDEX IF EXISTS theme_idx_new');
+    case 2:
+      return this.query('CREATE TABLE aaep_cache_new (' +
+                        '  id integer,' +
+                        '  title character varying(255),' +
+                        '  snippet text,' +
+                        '  link character varying(2048),' +
+                        '  url character varying(2048),' +
+                        '  lat double precision,' +
+                        '  lng double precision,'+
+                        '  geometry_type text,' +
+                        '  geometry text,' +
+                        '  ordinal bigint,' +
+                        '  theme character varying(255),' +
+                        '  image character varying(2048)' +
+                        ')');
+    case 3:
+      return this.query('CREATE INDEX theme_idx_new ON aaep_cache_new (theme)');
+    case 4:
+      return this.query('GRANT SELECT ON aaep_cache_new TO scott');
+  }
 }
 
 function swapTable(index) {
-    switch (index) {
-        case 0:
-            return this.query('DROP TABLE IF EXISTS aaep_cache');
-        case 1:
-            return this.query('ALTER TABLE aaep_cache_new RENAME TO aaep_cache');
-        case 2:
-            return this.query('ALTER INDEX theme_idx_new RENAME TO theme_idx');
-    }
+  switch (index) {
+    case 0:
+      return this.query('DROP TABLE IF EXISTS aaep_cache');
+    case 1:
+      return this.query('ALTER TABLE aaep_cache_new RENAME TO aaep_cache');
+    case 2:
+      return this.query('ALTER INDEX theme_idx_new RENAME TO theme_idx');
+  }
 }
 
 var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
