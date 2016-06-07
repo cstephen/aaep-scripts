@@ -33,41 +33,45 @@ module.exports = function aceDrupal(url) {
   }
 
   function initialize(credentials) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var url = baseUrl + '/user/token.json';
       var options = {
         headers: {
           'Content-Type': 'application/json'
         }
       };
-      rest.postJson(url, options).then(function(response) {
-        return response;
-      }).then(function(response) {
-        var token = response;
-        url = baseUrl + '/user/login.json';
-        options = {
-          headers: {
+      rest.postJson(url, options)
+        .then(function (response) {
+          return response;
+        })
+        .then(function (response) {
+          var token = response;
+          url = baseUrl + '/user/login.json';
+          options = {
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': token
+            },
+            'username': credentials.username,
+            'password': credentials.password
+          };
+          return rest.postJson(url, options);
+        })
+        .then(function (response) {
+          token = response.token;
+          cookie = response.session_name + '=' + response.sessid;
+          authHeaders = {
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'X-CSRF-Token': token
-          },
-          'username': credentials.username,
-          'password': credentials.password
-        };
-        return rest.postJson(url, options);
-      }).then(function(response) {
-        token = response.token;
-        cookie = response.session_name + '=' + response.sessid;
-        authHeaders = {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': token,
-          'Cookie': cookie
-        };
-        resolve();
-      }).fail(function(err) {
-        console.log(err);
-        reject(err);
-      });
+            'X-CSRF-Token': token,
+            'Cookie': cookie
+          };
+          resolve();
+        })
+        .fail(function (err) {
+          console.log(err);
+          reject(err);
+        });
     });
   }
 
@@ -76,31 +80,36 @@ module.exports = function aceDrupal(url) {
     var options = {
       headers: authHeaders
     };
-    rest.get(url, options).then(function(response) {
-      async.eachLimit(response, 5, function(result, callback) {
-        console.log('Deleting: ' + result.lid);
-        url = baseUrl + '/node/' + result.nid;
-        rest.del(url, options).then(function(response) {
-          callback();
+    rest.get(url, options)
+      .then(function (response) {
+        async.eachLimit(response, 5, function (result, callback) {
+          console.log('Deleting: ' + result.lid);
+          url = baseUrl + '/node/' + result.nid;
+          rest.del(url, options)
+            .then(function (response) {
+              callback();
+            });
         });
+      })
+      .fail(function (err) {
+        console.log(err);
       });
-    }).fail(function(err) {
-      console.log(err);
-    });
   }
 
   function add(metadata, results) {
     var newItems = underscore.pluck(results, 'id');
-    getExistingItems(metadata.drupalViewPath).then(function(items) {
-      var existingItems = underscore.pluck(items, 'lid');
-      return underscore.difference(newItems, existingItems);
-    }).then(function(validItems) {
-      for(var i = 0; i < results.length; i++) {
-        if(underscore.indexOf(validItems, results[i].id) !== -1) {
-          addItem(metadata, results[i]);
+    getExistingItems(metadata.drupalViewPath)
+      .then(function (items) {
+        var existingItems = underscore.pluck(items, 'lid');
+        return underscore.difference(newItems, existingItems);
+      })
+      .then(function (validItems) {
+        for(var i = 0; i < results.length; i++) {
+          if(underscore.indexOf(validItems, results[i].id) !== -1) {
+            addItem(metadata, results[i]);
+          }
         }
-      }
-    });
+      });
   }
 
   function get(viewPath) {

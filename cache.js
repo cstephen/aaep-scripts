@@ -24,83 +24,83 @@ var drupalInitPromise = drupalAgent.initialize({
 });
 
 var sharePromise = drupalInitPromise
-.then(function() {
-  return drupalAgent.get('/views/map_data_export.json');
-})
-.then(function(results) {
-  return new Promise(function(resolve, reject) {
-    async.each(results, function(result, callback) {
-      var geoJson = JSON.parse(result.geofield);
-      var point;
+  .then(function () {
+    return drupalAgent.get('/views/map_data_export.json');
+  })
+  .then(function (results) {
+    return new Promise(function (resolve, reject) {
+      async.each(results, function (result, callback) {
+        var geoJson = JSON.parse(result.geofield);
+        var point;
 
-      if(geoJson.type === 'Point') {
-        point = geoJson;
-      } else {
-        point = turf.pointOnSurface(geoJson).geometry;
-      }
-      var geometryWkt = wellknown.stringify(geoJson);
-      var themeArray = result.theme.split(':');
-      themeArray.forEach(function(theme, index) {
+        if(geoJson.type === 'Point') {
+          point = geoJson;
+        } else {
+          point = turf.pointOnSurface(geoJson).geometry;
+        }
+        var geometryWkt = wellknown.stringify(geoJson);
+        var themeArray = result.theme.split(':');
+        themeArray.forEach(function (theme, index) {
+          items.push({
+            id: result.nid,
+            title: result.node_title,
+            snippet: result.description,
+            link: drupalBaseUrl + result.link,
+            url: result.url,
+            lat: point.coordinates[1],
+            lng: point.coordinates[0],
+            geometry: geometryWkt,
+            geometry_type: 'ST_' + geoJson.type,
+            ordinal: index,
+            theme: theme,
+            image: drupalBaseUrl + result.image
+          });
+        });
+        callback();
+      }, function (err) {
+        if(err) {
+          console.log(err.message);
+          reject(err.message);
+        }
+        resolve();
+      });
+    });
+  });
+
+var aceWeatherPromise = drupalInitPromise
+  .then(function () {
+    return drupalAgent.get('/views/export_ace_weather_reports.json');
+  })
+  .then(function (results) {
+    return new Promise(function (resolve, reject) {
+      async.each(results, function (result, callback) {
+        var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
+        var template = underscore.template(content);
+        var description = template(result);
         items.push({
           id: result.nid,
           title: result.node_title,
-          snippet: result.description,
+          snippet: description,
           link: drupalBaseUrl + result.link,
-          url: result.url,
-          lat: point.coordinates[1],
-          lng: point.coordinates[0],
-          geometry: geometryWkt,
-          geometry_type: 'ST_' + geoJson.type,
-          ordinal: index,
-          theme: theme,
-          image: drupalBaseUrl + result.image
+          url: drupalBaseUrl + result.link,
+          lat: result.latitude,
+          lng: result.longitude,
+          geometry: 'POINT (' + result.longitude + ', ' + result.latitude + ')',
+          geometry_type: 'ST_Point',
+          ordinal: 0,
+          theme: null,
+          image: null
         });
+        callback();
+      }, function (err) {
+        if(err) {
+          console.log(err.message);
+          reject(err.message);
+        }
+        resolve();
       });
-      callback();
-    }, function(err) {
-      if(err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      resolve();
     });
   });
-});
-
-var aceWeatherPromise = drupalInitPromise
-.then(function() {
-  return drupalAgent.get('/views/export_ace_weather_reports.json');
-})
-.then(function(results) {
-  return new Promise(function(resolve, reject) {
-    async.each(results, function(result, callback) {
-      var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
-      var template = underscore.template(content);
-      var description = template(result);
-      items.push({
-        id: result.nid,
-        title: result.node_title,
-        snippet: description,
-        link: drupalBaseUrl + result.link,
-        url: drupalBaseUrl + result.link,
-        lat: result.latitude,
-        lng: result.longitude,
-        geometry: 'POINT (' + result.longitude + ', ' + result.latitude + ')',
-        geometry_type: 'ST_Point',
-        ordinal: 0,
-        theme: null,
-        image: null
-      });
-      callback();
-    }, function(err) {
-      if(err) {
-        console.log(err.message);
-        reject(err.message);
-      }
-      resolve();
-    });
-  });
-});
 
 var db = pgp(pgConnection);
 
@@ -143,58 +143,60 @@ function swapTable(index) {
     }
 }
 
-Promise.all([sharePromise, aceWeatherPromise])
-.then(function(results) {
-  return db.tx(function(t) {
-    return this.sequence(createTable);
-  });
-})
-.then(function() {
-  return new Promise(function(resolve, reject) {
-    async.eachSeries(items, function(item, callback) {
-      var query = 'INSERT INTO aaep_cache_new VALUES (' +
-                  '  ${id},' +
-                  '  ${title},' +
-                  '  ${snippet},' +
-                  '  ${link},' +
-                  '  ${url},' +
-                  '  ${lat},' +
-                  '  ${lng},' +
-                  '  ${geometry_type},' +
-                  '  ${geometry},' +
-                  '  ${ordinal},' +
-                  '  ${theme},' +
-                  '  ${image}' +
-                  ')';
-      db.none(query, item)
-      .then(function() {
-        callback();
-      })
-      .catch(function(err) {
-        reject(err);
+var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
+  .then(function (results) {
+    return db.tx(function (t) {
+      return this.sequence(createTable);
+    });
+  })
+  .then(function () {
+    return new Promise(function (resolve, reject) {
+      async.eachSeries(items, function (item, callback) {
+        var query = 'INSERT INTO aaep_cache_new VALUES (' +
+                    '  ${id},' +
+                    '  ${title},' +
+                    '  ${snippet},' +
+                    '  ${link},' +
+                    '  ${url},' +
+                    '  ${lat},' +
+                    '  ${lng},' +
+                    '  ${geometry_type},' +
+                    '  ${geometry},' +
+                    '  ${ordinal},' +
+                    '  ${theme},' +
+                    '  ${image}' +
+                    ')';
+        db.none(query, item)
+        .then(function () {
+          callback();
+        })
+        .catch(function (err) {
+          reject(err);
+        });
+      }, function (err) {
+        if(err) {
+          reject(err.message);
+        }
+        resolve();
       });
-    }, function(err) {
-      if(err) {
-        reject(err.message);
-      }
-      resolve();
     });
   });
-})
-.then(function() {
-  return db.one('SELECT COUNT(*) FROM aaep_cache_new');
-})
-.then(function(result) {
-  if(result.count != items.length) {
-    throw new Error(items.length + ' expected in database, but found only ' + result.count);
-  }
-  return db.tx(function(t) {
-    return this.sequence(swapTable);
+
+insertPromise
+  .then(function () {
+    return db.one('SELECT COUNT(*) FROM aaep_cache_new');
+  })
+  .then(function (result) {
+    if(result.count != items.length) {
+      throw new Error(items.length + ' expected in database, but found only ' + result.count);
+    }
+    return db.tx(function (t) {
+      return this.sequence(swapTable);
+    });
+  })
+  .then(function () {
+    pgp.end();
+  })
+  .catch(function (err) {
+    console.log(err);
   });
-})
-.then(function() {
-  pgp.end();
-})
-.catch(function(err) {
-  console.log(err);
-});

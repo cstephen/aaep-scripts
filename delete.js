@@ -7,6 +7,7 @@ var drupalInitPromise = drupalAgent.initialize({
   'password': 'password'
 });
 
-drupalInitPromise.then(function() {
-  drupalAgent.remove('/views/ace_weather_reports');
-});
+drupalInitPromise
+	.then(function () {
+	  drupalAgent.remove('/views/ace_weather_reports');
+	});
