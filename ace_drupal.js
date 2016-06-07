@@ -1,6 +1,7 @@
 var rest = require('restler-q');
 var async = require('async');
 var underscore = require('underscore');
+var fs = require('fs');
 
 module.exports = function aceDrupal(url) {
   var baseUrl = url;
@@ -17,7 +18,6 @@ module.exports = function aceDrupal(url) {
   }
 
   function addItem(metadata, item) {
-    var fs = require('fs');
     var content = fs.readFileSync(metadata.drupalTemplate, 'utf8');
     var template = underscore.template(content);
     console.log('Adding: ' + item.id);
