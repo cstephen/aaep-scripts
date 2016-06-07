@@ -38,7 +38,7 @@ var sharePromise = drupalInitPromise
       } else {
         point = turf.pointOnSurface(geoJson).geometry;
       }
-      geometryWkt = wellknown.stringify(geoJson);
+      var geometryWkt = wellknown.stringify(geoJson);
       var themeArray = result.theme.split(':');
       themeArray.forEach(function(theme, index) {
         items.push({

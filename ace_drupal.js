@@ -2,8 +2,8 @@ var rest = require('restler-q');
 var async = require('async');
 var underscore = require('underscore');
 
-module.exports = function aceDrupal(baseUrl) {
-  var baseUrl = baseUrl;
+module.exports = function aceDrupal(url) {
+  var baseUrl = url;
   var token;
   var cookie;
   var authHeaders;
@@ -12,7 +12,7 @@ module.exports = function aceDrupal(baseUrl) {
     var viewUrl = baseUrl + viewPath; 
     var options = {
       headers: authHeaders
-    }
+    };
     return rest.get(viewUrl, options);
   }
 
@@ -28,7 +28,7 @@ module.exports = function aceDrupal(baseUrl) {
     var url = baseUrl + '/node.json';
     var options = {
       headers: authHeaders
-    }
+    };
     rest.postJson(url, content, options);
   }
 
@@ -39,9 +39,9 @@ module.exports = function aceDrupal(baseUrl) {
         headers: {
           'Content-Type': 'application/json'
         }
-      }
+      };
       rest.postJson(url, options).then(function(response) {
-        return response
+        return response;
       }).then(function(response) {
         var token = response;
         url = baseUrl + '/user/login.json';
@@ -52,7 +52,7 @@ module.exports = function aceDrupal(baseUrl) {
           },
           'username': credentials.username,
           'password': credentials.password
-        }
+        };
         return rest.postJson(url, options);
       }).then(function(response) {
         token = response.token;
@@ -62,7 +62,7 @@ module.exports = function aceDrupal(baseUrl) {
           'Content-Type': 'application/json',
           'X-CSRF-Token': token,
           'Cookie': cookie
-        }
+        };
         resolve();
       }).fail(function(err) {
         console.log(err);
@@ -75,7 +75,7 @@ module.exports = function aceDrupal(baseUrl) {
     var url = baseUrl + viewPath;
     var options = {
       headers: authHeaders
-    }
+    };
     rest.get(url, options).then(function(response) {
       async.eachLimit(response, 5, function(result, callback) {
         console.log('Deleting: ' + result.lid);
@@ -92,7 +92,7 @@ module.exports = function aceDrupal(baseUrl) {
   function add(metadata, results) {
     var newItems = underscore.pluck(results, 'id');
     getExistingItems(metadata.drupalViewPath).then(function(items) {
-      existingItems = underscore.pluck(items, 'lid');
+      var existingItems = underscore.pluck(items, 'lid');
       return underscore.difference(newItems, existingItems);
     }).then(function(validItems) {
       for(var i = 0; i < results.length; i++) {
@@ -107,7 +107,7 @@ module.exports = function aceDrupal(baseUrl) {
     var url = baseUrl + viewPath;
     var options = {
       headers: authHeaders
-    }
+    };
     return rest.get(url, options);
   }
 
@@ -116,5 +116,5 @@ module.exports = function aceDrupal(baseUrl) {
     remove: remove,
     add: add,
     get: get
-  }
-}
+  };
+};

@@ -1,7 +1,7 @@
 var rest = require('restler-q');
 
-module.exports = function aceLoopback(baseUrl) {
-  var baseUrl = baseUrl;
+module.exports = function aceLoopback(url) {
+  var baseUrl = url;
   var token;
 
   function initialize(loginPath, credentials) {
@@ -12,7 +12,7 @@ module.exports = function aceLoopback(baseUrl) {
           'Content-Type': 'application/json'
         },
         data: credentials
-      }
+      };
 
       rest.post(url, options).then(function(response) {
         token = response.id;
@@ -37,5 +37,5 @@ module.exports = function aceLoopback(baseUrl) {
   return {
     initialize: initialize,
     get: get
-  }
-}
+  };
+};

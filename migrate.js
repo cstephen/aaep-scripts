@@ -14,13 +14,13 @@ var drupalInitPromise = drupalAgent.initialize({
   'password': 'password'
 });
 
-weatherHighlight = {
+var weatherHighlight = {
 	'loopbackPath': '/WeatherReports/with-positions',
 	'drupalType': 'ace_weather_report',
 	'drupalTitle': 'ACE Weather Report',
 	'drupalViewPath': '/views/ace_weather_reports',
 	'drupalTemplate': './templates/drupal/ace_weather_reports.json'
-}
+};
 
 Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {
   return loopbackAgent.get(weatherHighlight.loopbackPath);
