@@ -1,8 +1,8 @@
 var aceLoopback = require('./ace_loopback.js');
 var aceDrupal = require('./ace_drupal.js');
 
-var loopbackAgent = new aceLoopback('http://localhost:3000/api');
-var drupalAgent = new aceDrupal('http://localhost:9090/api');
+var loopbackAgent = new aceLoopback('http://137.229.94.246:3000/api');
+var drupalAgent = new aceDrupal('http://localhost/api');
 
 var loopbackInitPromise = loopbackAgent.initialize('/MobileUsers/login', {
   'username': 'testuser',

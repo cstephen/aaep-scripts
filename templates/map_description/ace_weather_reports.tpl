@@ -6,9 +6,5 @@
 <% } %><% if(!_.isEmpty(temperature_value) && !_.isEmpty(temperature_value)) { %>Temperature: <%= temperature_value %> <%= temperature_units %>
 <% } %><% if(!_.isEmpty(wind_direction)) { %>Wind Direction: <%= wind_direction %>
 <% } %><% if(!_.isEmpty(wind_value) && !_.isEmpty(wind_units)) { %>Wind: <%= wind_value %> <%= wind_units %>
-<% } %><% if(!_.isEmpty(phenomenon)) { %>Phenomenon: <%= phenomenon %>
-<% } %>
-
-<% if(!_.isEmpty(body)) { %>
-	<%= body %>
-<% } %>
+<% } %><% if(!_.isEmpty(phenomenon)) { %>Phenomenon: <%= phenomenon %><% } %>
+<% if(!_.isEmpty(body)) { %><%= body %><% } %>
