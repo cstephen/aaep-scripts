@@ -78,7 +78,7 @@ module.exports = function aceDrupal(baseUrl) {
     }
     rest.get(url, options).then(function(response) {
       async.eachLimit(response, 5, function(result, callback) {
-        console.log('Deleting: ' + result.nid);
+        console.log('Deleting: ' + result.lid);
         url = baseUrl + '/node/' + result.nid;
         rest.del(url, options).then(function(response) {
           callback();
