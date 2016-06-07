@@ -31,14 +31,15 @@ var sharePromise = drupalInitPromise
     return new Promise(function (resolve, reject) {
       async.each(results, function (result, callback) {
         var geoJson = JSON.parse(result.geofield);
-        var point;
+        var geometryWkt = wellknown.stringify(geoJson);
 
+        var point;
         if(geoJson.type === 'Point') {
           point = geoJson;
         } else {
           point = turf.pointOnSurface(geoJson).geometry;
         }
-        var geometryWkt = wellknown.stringify(geoJson);
+
         var themeArray = result.theme.split(':');
         themeArray.forEach(function (theme, index) {
           items.push({
@@ -77,6 +78,9 @@ var aceWeatherPromise = drupalInitPromise
         var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
         var template = underscore.template(content);
         var description = template(result);
+
+        var pointWkt = wellknown.stringify(turf.point([result.longitude, result.latitude]));
+
         items.push({
           id: result.nid,
           title: result.node_title,
@@ -85,7 +89,7 @@ var aceWeatherPromise = drupalInitPromise
           url: drupalBaseUrl + result.link,
           lat: result.latitude,
           lng: result.longitude,
-          geometry: 'POINT (' + result.longitude + ', ' + result.latitude + ')',
+          geometry: pointWkt,
           geometry_type: 'ST_Point',
           ordinal: 0,
           theme: null,
