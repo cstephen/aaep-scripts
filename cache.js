@@ -2,6 +2,8 @@ var turf = require('turf');
 var wellknown = require('wellknown');
 var pgp = require('pg-promise')();
 var async = require('async');
+var fs = require('fs');
+var underscore = require('underscore');
 var aceDrupal = require('./ace_drupal.js');
 
 var drupalBaseUrl = 'http://localhost:9090';
@@ -15,10 +17,13 @@ var pgConnection = {
 };
 
 var items = [];
-var drupalResultsPromise = drupalAgent.initialize({
+
+var drupalInitPromise = drupalAgent.initialize({
   'username': 'ACE Import User',
   'password': 'password'
-})
+});
+
+var sharePromise = drupalInitPromise
 .then(function() {
   return drupalAgent.get('/views/map_data_export.json');
 })
@@ -28,15 +33,14 @@ var drupalResultsPromise = drupalAgent.initialize({
       var geoJson = JSON.parse(result.geofield);
       var point;
 
-      if(geoJson['type'] === 'Point') {
+      if(geoJson.type === 'Point') {
         point = geoJson;
       } else {
         point = turf.pointOnSurface(geoJson).geometry;
       }
-
       geometryWkt = wellknown.stringify(geoJson);
       var themeArray = result.theme.split(':');
-      for(var i = 0; i < themeArray.length; i++) {
+      themeArray.forEach(function(theme, index) {
         items.push({
           id: result.nid,
           title: result.node_title,
@@ -47,11 +51,11 @@ var drupalResultsPromise = drupalAgent.initialize({
           lng: point.coordinates[0],
           geometry: geometryWkt,
           geometry_type: 'ST_' + geoJson.type,
-          ordinal: i,
-          theme: themeArray[i],
+          ordinal: index,
+          theme: theme,
           image: drupalBaseUrl + result.image
-        })
-      }
+        });
+      });
       callback();
     }, function(err) {
       if(err) {
@@ -61,8 +65,42 @@ var drupalResultsPromise = drupalAgent.initialize({
       resolve();
     });
   });
-})
+});
 
+var aceWeatherPromise = drupalInitPromise
+.then(function() {
+  return drupalAgent.get('/views/export_ace_weather_reports.json');
+})
+.then(function(results) {
+  return new Promise(function(resolve, reject) {
+    async.each(results, function(result, callback) {
+      var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
+      var template = underscore.template(content);
+      var description = template(result);
+      items.push({
+        id: result.nid,
+        title: result.node_title,
+        snippet: description,
+        link: drupalBaseUrl + result.link,
+        url: drupalBaseUrl + result.link,
+        lat: result.latitude,
+        lng: result.longitude,
+        geometry: 'POINT (' + result.longitude + ', ' + result.latitude + ')',
+        geometry_type: 'ST_Point',
+        ordinal: 0,
+        theme: null,
+        image: null
+      });
+      callback();
+    }, function(err) {
+      if(err) {
+        console.log(err.message);
+        reject(err.message);
+      }
+      resolve();
+    });
+  });
+});
 
 var db = pgp(pgConnection);
 
@@ -105,7 +143,7 @@ function swapTable(index) {
     }
 }
 
-drupalResultsPromise
+Promise.all([sharePromise, aceWeatherPromise])
 .then(function(results) {
   return db.tx(function(t) {
     return this.sequence(createTable);

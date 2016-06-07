@@ -19,7 +19,7 @@ weatherHighlight = {
 	'drupalType': 'ace_weather_report',
 	'drupalTitle': 'ACE Weather Reports',
 	'drupalViewPath': '/views/ace_weather_reports',
-	'drupalTemplate': './ace_weather_reports.json'
+	'drupalTemplate': './templates/drupal/ace_weather_reports.json'
 }
 
 Promise.all([loopbackInitPromise, drupalInitPromise]).then(function() {
