@@ -2,7 +2,7 @@
   "name": "ace_importer",
   "version": "1.0.0",
   "description": "",
-  "main": "ace_importer.js",
+  "main": "cache.js",
   "dependencies": {
     "async": "^2.0.0-rc.5",
     "fs": "0.0.2",
