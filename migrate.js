@@ -15,7 +15,7 @@ var drupalInitPromise = drupalAgent.initialize({
 });
 
 var weatherHighlight = {
-  'loopbackPath': '/WeatherReports/with-positions',
+  'loopbackPath': '/WeatherReports/aaep',
   'drupalType': 'ace_weather_report',
   'drupalTitle': 'ACE Weather Report',
   'drupalViewPath': '/views/ace_weather_reports',
