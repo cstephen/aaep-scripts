@@ -2,6 +2,7 @@ var rest = require('restler-q');
 var async = require('async');
 var underscore = require('underscore');
 var fs = require('fs');
+var moment = require('moment');
 
 module.exports = function aceDrupal(url) {
   var baseUrl = url;
@@ -22,7 +23,10 @@ module.exports = function aceDrupal(url) {
     var template = underscore.template(content);
     console.log('Adding: ' + item.id);
     item.type = metadata.drupalType;
-    item.title = metadata.drupalTitle;
+
+    var date = moment(item.Position.timestamp).format('MMMM D YYYY, h:mm:ss A');
+    item.title = metadata.drupalTitle + ': ' + date + ' UTC';
+
     content = template(item);
     content = JSON.parse(content);
     var url = baseUrl + '/node.json';
