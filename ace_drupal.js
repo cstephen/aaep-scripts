@@ -93,6 +93,9 @@ module.exports = function aceDrupal(url) {
           rest.del(url, options)
             .then(function (response) {
               callback();
+            })
+            .fail(function (err) {
+              console.log(err);
             });
         });
       })
@@ -130,7 +133,10 @@ module.exports = function aceDrupal(url) {
     var options = {
       headers: authHeaders
     };
-    return rest.get(url, options);
+    return rest.get(url, options)
+      .fail(function (err) {
+        console.log(err);
+      });
   }
 
   return {
