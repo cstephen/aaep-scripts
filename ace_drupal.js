@@ -33,7 +33,8 @@ module.exports = function aceDrupal(url) {
     var options = {
       headers: authHeaders
     };
-    rest.postJson(url, content, options);
+
+    return rest.postJson(url, content, options);
   }
 
   function initialize(credentials) {
@@ -108,11 +109,19 @@ module.exports = function aceDrupal(url) {
         return underscore.difference(newItems, existingItems);
       })
       .then(function (validItems) {
-        for(var i = 0; i < results.length; i++) {
-          if(underscore.indexOf(validItems, results[i].id) !== -1) {
-            addItem(metadata, results[i]);
+        async.eachLimit(results, 5, function (result, callback) {
+          if(underscore.indexOf(validItems, result.id) !== -1) {
+            addItem(metadata, result)
+              .then(function () {
+                callback();
+              })
+              .fail(function (err) {
+                console.log(err);
+              });
+          } else {
+            callback();
           }
-        }
+        });
       });
   }
 
