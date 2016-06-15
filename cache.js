@@ -92,7 +92,7 @@ var aceWeatherPromise = drupalInitPromise
           geometry: pointWkt,
           geometry_type: 'ST_Point',
           ordinal: 0,
-          theme: null,
+          theme: 'User Observations',
           image: null
         });
         callback();
