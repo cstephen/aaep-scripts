@@ -10,7 +10,7 @@ var loopbackInitPromise = loopbackAgent.initialize('/MobileUsers/login', {
 });
 
 var drupalInitPromise = drupalAgent.initialize({
-  'username': 'ACE Import User',
+  'username': 'AAEP Script User',
   'password': 'password'
 });
 

@@ -19,7 +19,7 @@ var pgConnection = {
 var items = [];
 
 var drupalInitPromise = drupalAgent.initialize({
-  'username': 'ACE Import User',
+  'username': 'AAEP Script User',
   'password': 'password'
 });
 
