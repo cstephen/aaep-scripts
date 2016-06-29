@@ -2,8 +2,6 @@ var turf = require('turf');
 var wellknown = require('wellknown');
 var pgp = require('pg-promise')();
 var async = require('async');
-var fs = require('fs');
-var underscore = require('underscore');
 var drupal = require('./agents/drupal.js');
 
 var drupalBaseUrl = 'http://localhost:9090';
@@ -75,50 +73,6 @@ var sharePromise = drupalInitPromise
     });
   });
 
-// Get items of the ACE Weather Report content type from Drupal and
-// format the fields as needed for the map system's cache database.
-var aceWeatherPromise = drupalInitPromise
-  .then(function () {
-    return drupalAgent.get('/views/export_ace_weather_reports.json');
-  })
-  .then(function (results) {
-    return new Promise(function (resolve, reject) {
-      async.each(results, function (result, callback) {
-        // ACE Weather Reports are made up of lots of small fields, so
-        // use a template to combine all of these fields into a single
-        // description field for the map system.
-        var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
-        var template = underscore.template(content);
-        var description = template(result);
-
-        // The map system requires geometry in WKT format.
-        var pointWkt = wellknown.stringify(turf.point([result.longitude, result.latitude]));
-
-        items.push({
-          id: result.nid,
-          title: result.node_title,
-          snippet: description,
-          link: drupalBaseUrl + result.link,
-          url: drupalBaseUrl + result.link,
-          lat: result.latitude,
-          lng: result.longitude,
-          geometry: pointWkt,
-          geometry_type: 'ST_Point',
-          ordinal: 0,
-          theme: 'User Observations',
-          image: null
-        });
-        callback();
-      }, function (err) {
-        if(err) {
-          console.log(err.message);
-          reject(err.message);
-        }
-        resolve();
-      });
-    });
-  });
-
 var db = pgp(pgConnection);
 
 // Data is imported into a new database table, then the new table is swapped
@@ -167,9 +121,9 @@ function swapTable(index) {
   }
 }
 
-// Once the Share and ACE Weather Report items have been downloaded
-// and processed, insert each row into the new database table.
-var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
+// Once the Share items have been downloaded and processed, insert each
+// row into the new database table.
+var insertPromise = sharePromise
   .then(function (results) {
     return db.tx(function (t) {
       return this.sequence(createTable);

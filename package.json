@@ -1,16 +1,13 @@
 {
-  "name": "ace_importer",
+  "name": "aaep_cache_generator",
   "version": "1.0.0",
   "description": "",
   "main": "cache.js",
   "dependencies": {
     "async": "^2.0.0-rc.5",
-    "fs": "0.0.2",
-    "moment": "^2.13.0",
     "pg-promise": "^4.4.0",
     "restler-q": "^0.1.1",
     "turf": "^3.0.5",
-    "underscore": "^1.8.3",
     "wellknown": "^0.4.2"
   },
   "devDependencies": {},
