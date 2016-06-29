@@ -1,4 +1,4 @@
-var aceDrupal = require('./ace_drupal.js');
+var aceDrupal = require('./agents/drupal.js');
 
 var drupalAgent = new aceDrupal('http://localhost/api');
 

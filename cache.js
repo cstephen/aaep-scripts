@@ -4,7 +4,7 @@ var pgp = require('pg-promise')();
 var async = require('async');
 var fs = require('fs');
 var underscore = require('underscore');
-var aceDrupal = require('./ace_drupal.js');
+var aceDrupal = require('./agents/drupal.js');
 
 var drupalBaseUrl = 'http://localhost:9090';
 var drupalAgent = new aceDrupal('http://localhost/api');

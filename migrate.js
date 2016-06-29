@@ -1,5 +1,5 @@
-var aceLoopback = require('./ace_loopback.js');
-var aceDrupal = require('./ace_drupal.js');
+var aceLoopback = require('./agents/loopback.js');
+var aceDrupal = require('./agents/drupal.js');
 
 var loopbackAgent = new aceLoopback('http://137.229.94.246:3000/api');
 var drupalAgent = new aceDrupal('http://localhost/api');
