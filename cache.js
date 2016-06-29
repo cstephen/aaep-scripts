@@ -23,6 +23,8 @@ var drupalInitPromise = drupalAgent.initialize({
   'password': 'password'
 });
 
+// Get items of the Share content type from Drupal and format the
+// fields as needed for the map system's cache database.
 var sharePromise = drupalInitPromise
   .then(function () {
     return drupalAgent.get('/views/map_data_export.json');
@@ -31,8 +33,12 @@ var sharePromise = drupalInitPromise
     return new Promise(function (resolve, reject) {
       async.each(results, function (result, callback) {
         var geoJson = JSON.parse(result.geofield);
+
+        // The map system requires geometry in WKT format.
         var geometryWkt = wellknown.stringify(geoJson);
 
+        // A point is needed for the marker, whether the geometry is
+        // a point already, a line, or a polygon.
         var point;
         if(geoJson.type === 'Point') {
           point = geoJson;
@@ -40,6 +46,7 @@ var sharePromise = drupalInitPromise
           point = turf.pointOnSurface(geoJson).geometry;
         }
 
+        // The map system requires a separate database row for each theme.
         var themeArray = result.theme.split(':');
         themeArray.forEach(function (theme, index) {
           items.push({
@@ -68,6 +75,8 @@ var sharePromise = drupalInitPromise
     });
   });
 
+// Get items of the ACE Weather Report content type from Drupal and
+// format the fields as needed for the map system's cache database.
 var aceWeatherPromise = drupalInitPromise
   .then(function () {
     return drupalAgent.get('/views/export_ace_weather_reports.json');
@@ -75,10 +84,14 @@ var aceWeatherPromise = drupalInitPromise
   .then(function (results) {
     return new Promise(function (resolve, reject) {
       async.each(results, function (result, callback) {
+        // ACE Weather Reports are made up of lots of small fields, so
+        // use a template to combine all of these fields into a single
+        // description field for the map system.
         var content = fs.readFileSync('./templates/map_description/ace_weather_reports.tpl', 'utf8');
         var template = underscore.template(content);
         var description = template(result);
 
+        // The map system requires geometry in WKT format.
         var pointWkt = wellknown.stringify(turf.point([result.longitude, result.latitude]));
 
         items.push({
@@ -108,6 +121,10 @@ var aceWeatherPromise = drupalInitPromise
 
 var db = pgp(pgConnection);
 
+// Data is imported into a new database table, then the new table is swapped
+// into production when the data is finished loading. This prevents small
+// downtime blips every time the cache script runs. This function creates the
+// new table as a PostgreSQL transaction sequence.
 function createTable(index) {
   switch (index) {
     case 0:
@@ -136,6 +153,9 @@ function createTable(index) {
   }
 }
 
+// This PostgreSQL transaction sequence swaps the new table into production.
+// It is called only after all of the rows have been imported and verified
+// to exist in the new table.
 function swapTable(index) {
   switch (index) {
     case 0:
@@ -147,6 +167,8 @@ function swapTable(index) {
   }
 }
 
+// Once the Share and ACE Weather Report items have been downloaded
+// and processed, insert all of the items into the new database table.
 var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
   .then(function (results) {
     return db.tx(function (t) {
@@ -155,6 +177,8 @@ var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
   })
   .then(function () {
     return new Promise(function (resolve, reject) {
+      // Had trouble getting inserts to work concurrently.
+      // Inserting rows in series works.
       async.eachSeries(items, function (item, callback) {
         var query = 'INSERT INTO aaep_cache_new VALUES (' +
                     '  ${id},' +
@@ -186,6 +210,9 @@ var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
     });
   });
 
+// Check that the number of rows in the new database table agrees
+// with the number of rows we attempted to insert. If and only if
+// the numbers agree, swap the new database table into production.
 insertPromise
   .then(function () {
     return db.one('SELECT COUNT(*) FROM aaep_cache_new');
