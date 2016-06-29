@@ -1,7 +1,7 @@
 // Load the promise-enabled version of the restler module.
 var rest = require('restler-q');
 
-module.exports = function aceLoopback(url) {
+module.exports = function loopback(url) {
   // The base LoopBack API URL.
   var baseUrl = url;
 

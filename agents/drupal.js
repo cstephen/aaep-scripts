@@ -4,7 +4,7 @@ var underscore = require('underscore');
 var fs = require('fs');
 var moment = require('moment');
 
-module.exports = function aceDrupal(url) {
+module.exports = function drupal(url) {
   // The base Drupal REST server URL.
   var baseUrl = url;
 
