@@ -4,10 +4,10 @@ var pgp = require('pg-promise')();
 var async = require('async');
 var fs = require('fs');
 var underscore = require('underscore');
-var aceDrupal = require('./agents/drupal.js');
+var drupal = require('./agents/drupal.js');
 
 var drupalBaseUrl = 'http://localhost:9090';
-var drupalAgent = new aceDrupal('http://localhost/api');
+var drupalAgent = new drupal('http://localhost/api');
 
 var pgConnection = {
   host: 'localhost',
@@ -168,7 +168,7 @@ function swapTable(index) {
 }
 
 // Once the Share and ACE Weather Report items have been downloaded
-// and processed, insert all of the items into the new database table.
+// and processed, insert each row into the new database table.
 var insertPromise = Promise.all([sharePromise, aceWeatherPromise])
   .then(function (results) {
     return db.tx(function (t) {

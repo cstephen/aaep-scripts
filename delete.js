@@ -1,6 +1,6 @@
-var aceDrupal = require('./agents/drupal.js');
+var drupal = require('./agents/drupal.js');
 
-var drupalAgent = new aceDrupal('http://localhost/api');
+var drupalAgent = new drupal('http://localhost/api');
 
 var drupalInitPromise = drupalAgent.initialize({
   'username': 'AAEP Script User',
