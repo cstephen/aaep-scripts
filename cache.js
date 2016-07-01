@@ -6,8 +6,9 @@ var fs = require('fs');
 var underscore = require('underscore');
 var drupal = require('./agents/drupal.js');
 
-var drupalBaseUrl = 'http://localhost:9090';
-var drupalAgent = new drupal('http://localhost/api');
+var drupalBaseUrl = 'http://arcticadaptationexchange.com';
+var drupalApiUrl = drupalBaseUrl + '/api';
+var drupalAgent = new drupal(drupalApiUrl);
 
 var pgConnection = {
   host: 'localhost',
@@ -20,14 +21,14 @@ var items = [];
 
 var drupalInitPromise = drupalAgent.initialize({
   'username': 'AAEP Script User',
-  'password': 'password'
+  'password': ''
 });
 
 // Get items of the Share content type from Drupal and format the
 // fields as needed for the map system's cache database.
 var sharePromise = drupalInitPromise
   .then(function () {
-    return drupalAgent.get('/views/map_data_export.json');
+    return drupalAgent.get('/views/map_export_share.json');
   })
   .then(function (results) {
     return new Promise(function (resolve, reject) {
@@ -79,7 +80,7 @@ var sharePromise = drupalInitPromise
 // format the fields as needed for the map system's cache database.
 var aceWeatherPromise = drupalInitPromise
   .then(function () {
-    return drupalAgent.get('/views/export_ace_weather_reports.json');
+    return drupalAgent.get('/views/map_export_ace_weather_reports.json');
   })
   .then(function (results) {
     return new Promise(function (resolve, reject) {

@@ -2,23 +2,24 @@ var loopback = require('./agents/loopback.js');
 var drupal = require('./agents/drupal.js');
 
 var loopbackAgent = new loopback('http://137.229.94.246:3000/api');
-var drupalAgent = new drupal('http://localhost/api');
+var drupalAgent = new drupal('http://arcticadaptationexchange.com/api');
 
 var loopbackInitPromise = loopbackAgent.initialize('/MobileUsers/login', {
   'username': 'testuser',
-  'password': 'password'
+  'password': ''
 });
+
 
 var drupalInitPromise = drupalAgent.initialize({
   'username': 'AAEP Script User',
-  'password': 'password'
+  'password': ''
 });
 
 var weatherHighlight = {
   'loopbackPath': '/WeatherReports/aaep',
   'drupalType': 'ace_weather_report',
   'drupalTitle': 'ACE Weather Report',
-  'drupalViewPath': '/views/ace_weather_reports',
+  'drupalViewPath': '/views/loopback_ace_weather_reports',
   'drupalTemplate': './templates/drupal/ace_weather_reports.json'
 };
 

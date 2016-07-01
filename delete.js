@@ -1,13 +1,13 @@
 var drupal = require('./agents/drupal.js');
 
-var drupalAgent = new drupal('http://localhost/api');
+var drupalAgent = new drupal('http://arcticadaptationexchange.com/api');
 
 var drupalInitPromise = drupalAgent.initialize({
   'username': 'AAEP Script User',
-  'password': 'password'
+  'password': ''
 });
 
 drupalInitPromise
   .then(function () {
-    drupalAgent.remove('/views/ace_weather_reports');
+    drupalAgent.remove('/views/loopback_ace_weather_reports');
   });
