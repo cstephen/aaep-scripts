@@ -4,8 +4,9 @@ var pgp = require('pg-promise')();
 var async = require('async');
 var drupal = require('./agents/drupal.js');
 
-var drupalBaseUrl = 'http://localhost:9090';
-var drupalAgent = new drupal('http://localhost/api');
+var drupalBaseUrl = 'http://arcticadaptationexchange.com';
+var drupalApiUrl = drupalBaseUrl + '/api';
+var drupalAgent = new drupal(drupalApiUrl);
 
 var pgConnection = {
   host: 'localhost',
@@ -18,7 +19,7 @@ var items = [];
 
 var drupalInitPromise = drupalAgent.initialize({
   'username': 'AAEP Script User',
-  'password': 'password'
+  'password': ''
 });
 
 // Get items of the Share content type from Drupal and format the
