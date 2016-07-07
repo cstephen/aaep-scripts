@@ -130,11 +130,9 @@ var insertPromise = sharePromise
     });
   })
   .then(function () {
-    return new Promise(function (resolve, reject) {
-      // Had trouble getting inserts to work concurrently.
-      // Inserting rows in series works.
-      async.eachSeries(items, function (item, callback) {
-        var query = 'INSERT INTO aaep_cache_new VALUES (' +
+    return db.tx(function (t) {
+      var queries = items.map(function (item) {
+        return t.none('INSERT INTO aaep_cache_new VALUES (' +
                     '  ${id},' +
                     '  ${title},' +
                     '  ${snippet},' +
@@ -147,21 +145,13 @@ var insertPromise = sharePromise
                     '  ${ordinal},' +
                     '  ${theme},' +
                     '  ${image}' +
-                    ')';
-        db.none(query, item)
-        .then(function () {
-          callback();
-        })
-        .catch(function (err) {
-          reject(err);
-        });
-      }, function (err) {
-        if(err) {
-          reject(err.message);
-        }
-        resolve();
+                    ')', item);
       });
+      return t.batch(queries);
     });
+  })
+  .catch(function (err) {
+    console.log(err);
   });
 
 // Check that the number of rows in the new database table agrees
